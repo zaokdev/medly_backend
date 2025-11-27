@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  # 1. Base de datos SQL (MySQL)
+  mysql:
+    image: mysql:8.0.44-debian
+    container_name: medly-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      MYSQL_DATABASE: "medly"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql # Esto guarda los datos aunque borres el contenedor
+
+  # 2. Base de datos NoSQL (MongoDB)
+  mongo:
+    image: mongo:latest
+    container_name: medly-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # 3. Cache / NoSQL Rápido (Redis) - Opcional pero pedido
+  redis:
+    image: redis:alpine
+    container_name: medly-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+# Definición de volúmenes para persistencia
+volumes:
+  mysql_data:
+  mongo_data:
