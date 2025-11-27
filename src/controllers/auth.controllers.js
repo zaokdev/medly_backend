@@ -2,13 +2,15 @@ import { models } from "../db/mysql.js";
 import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
 
+/**
+ * Este endpoint solo crea pacientes
+ */
 export const createUser = asyncHandler(async (req, res) => {
-  const { email, nombre, apellido, id_rol, password } = req.body;
+  const { email, nombre, apellido, password } = req.body;
   if (
     !req.body.email ||
     !req.body.nombre ||
     !req.body.apellido ||
-    !req.body.id_rol ||
     !req.body.password
   ) {
     res.status(404);
@@ -33,7 +35,50 @@ export const createUser = asyncHandler(async (req, res) => {
     nombre,
     email,
     apellido,
-    id_rol,
+    id_rol: 3,
+    password: passwordHashed,
+  });
+
+  if (user) return res.status(201).json({ mensaje: "Usuario creado" });
+
+  res.status(500);
+  throw new Error("Hubo un error al crear el usuario");
+});
+
+/**
+ * Este endpoint crea un doctor
+ */
+export const createDoctor = asyncHandler(async (req, res) => {
+  const { email, nombre, apellido, password } = req.body;
+  if (
+    !req.body.email ||
+    !req.body.nombre ||
+    !req.body.apellido ||
+    !req.body.password
+  ) {
+    res.status(404);
+    throw new Error("Datos incompletos");
+  }
+
+  const userFound = await models.usuarios.findOne({
+    where: { email },
+  });
+
+  //Verificar si el usuario no esta registrado
+  if (userFound) {
+    res.status(404);
+    throw new Error("Este email ya fue registrado");
+  }
+
+  //Hash de password
+  const salt = await bcrypt.genSalt(10);
+  const passwordHashed = await bcrypt.hash(password, salt);
+
+  const user = await models.usuarios.create({
+    nombre,
+    email,
+    apellido,
+    id_rol: 2,
     password: passwordHashed,
   });
 
