@@ -7,7 +7,7 @@ export const sessionConfig = session({
   secret: process.env.SESSION_SECRET || "12346drgkpmyohrnijhopk",
   resave: false,
   saveUninitialized: false,
-  name: "pharmaflow_auth",
+  name: "medly",
   cookie: {
     secure: false,
     httpOnly: true,
