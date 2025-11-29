@@ -19,6 +19,7 @@ const ConsultaSchema = new Schema({
 // Documento Principal: El Expediente del Paciente
 const ExpedienteSchema = new Schema({
   id_paciente_sql: { type: Number, required: true, unique: true }, // 1 Doc por Paciente
+  nombre_paciente: { type: String, required: true },
   tipo_sangre: String, // Datos generales que no cambian en cada cita
   alergias: [String],
 

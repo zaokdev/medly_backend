@@ -1,12 +1,13 @@
 import { models } from "../db/mysql.js";
 import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
+import Expediente from "../models/mongo/Expediente.js";
 
 /**
  * Este endpoint solo crea pacientes
  */
 export const createUser = asyncHandler(async (req, res) => {
-  const { email, nombre, apellido, password } = req.body;
+  const { email, nombre, apellido, password, alergias, tipo_sangre } = req.body;
   if (
     !req.body.email ||
     !req.body.nombre ||
@@ -39,6 +40,14 @@ export const createUser = asyncHandler(async (req, res) => {
     password: passwordHashed,
   });
 
+  const expediente = await Expediente.create({
+    id_paciente_sql: user.id,
+    nombre_paciente: `${nombre} ${apellido}`,
+    alergias,
+    tipo_sangre,
+    historial_consultas: [],
+  });
+
   if (user) return res.status(201).json({ mensaje: "Usuario creado" });
 
   res.status(500);
@@ -49,7 +58,7 @@ export const createUser = asyncHandler(async (req, res) => {
  * Este endpoint crea un doctor
  */
 export const createDoctor = asyncHandler(async (req, res) => {
-  const { email, nombre, apellido, password } = req.body;
+  const { email, nombre, apellido, password, especialidadeds } = req.body;
   if (
     !req.body.email ||
     !req.body.nombre ||
@@ -81,6 +90,8 @@ export const createDoctor = asyncHandler(async (req, res) => {
     id_rol: 2,
     password: passwordHashed,
   });
+
+  //TODO: AGREGAR ESPECIALIDADES DE DOCTOR
 
   if (user) return res.status(201).json({ mensaje: "Usuario creado" });
 
