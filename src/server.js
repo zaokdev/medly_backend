@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/errorHandlerMiddleware.js";
 import authRouter from "./routes/auth.routes.js";
 import searchRouter from "./routes/search.routes.js";
 import doctorsRouter from "./routes/doctors.routes.js";
+import appointmentsRouter from "./routes/appointments.routes.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(sessionMiddleware);
 app.use("/auth", authRouter);
 app.use("/search", searchRouter);
 app.use("/doctors", doctorsRouter);
+app.use("/appointments", appointmentsRouter);
 
 app.use(errorHandler);
 

@@ -18,6 +18,7 @@ export default function initModels(sequelize) {
   const roles = _roles.init(sequelize, DataTypes);
   const usuarios = _usuarios.init(sequelize, DataTypes);
 
+  // --- Relaciones Muchos a Muchos (Especialidades) ---
   especialidades.belongsToMany(usuarios, {
     as: "id_medico_usuarios",
     through: medicos_especialidades,
@@ -38,8 +39,20 @@ export default function initModels(sequelize) {
     as: "medicos_especialidades",
     foreignKey: "id_especialidad",
   });
+  medicos_especialidades.belongsTo(usuarios, {
+    as: "id_medico_usuario",
+    foreignKey: "id_medico",
+  });
+  usuarios.hasMany(medicos_especialidades, {
+    as: "medicos_especialidades",
+    foreignKey: "id_medico",
+  });
+
+  // --- Relaciones de Roles ---
   usuarios.belongsTo(roles, { as: "id_rol_role", foreignKey: "id_rol" });
   roles.hasMany(usuarios, { as: "usuarios", foreignKey: "id_rol" });
+
+  // --- Relaciones de Agenda Médica (Dueño del horario) ---
   agenda_medica.belongsTo(usuarios, {
     as: "id_medico_usuario",
     foreignKey: "id_medico",
@@ -48,26 +61,37 @@ export default function initModels(sequelize) {
     as: "agenda_medicas",
     foreignKey: "id_medico",
   });
+
+  // --- Relaciones de Citas (Médico y Paciente) ---
   citas.belongsTo(usuarios, {
-    as: "id_medico_usuario",
+    as: "medico_info",
     foreignKey: "id_medico",
   });
-  usuarios.hasMany(citas, { as: "cita", foreignKey: "id_medico" });
+  usuarios.hasMany(citas, { as: "citas_como_medico", foreignKey: "id_medico" }); // Ajusté el alias ligeramente para claridad
+
   citas.belongsTo(usuarios, {
-    as: "id_paciente_usuario",
+    as: "paciente_info",
     foreignKey: "id_paciente",
   });
   usuarios.hasMany(citas, {
-    as: "id_paciente_cita",
+    as: "citas_como_paciente", // Ajusté el alias para evitar conflicto con el de arriba
     foreignKey: "id_paciente",
   });
-  medicos_especialidades.belongsTo(usuarios, {
-    as: "id_medico_usuario",
-    foreignKey: "id_medico",
+
+  // =========================================================
+  // NUEVAS RELACIONES: Citas <-> Agenda Médica (Slot)
+  // =========================================================
+
+  // 1. Una Cita pertenece a una Agenda (para saber fecha y hora)
+  citas.belongsTo(agenda_medica, {
+    as: "agenda_info", // Alias útil para el include
+    foreignKey: "id_agenda",
   });
-  usuarios.hasMany(medicos_especialidades, {
-    as: "medicos_especialidades",
-    foreignKey: "id_medico",
+
+  // 2. Una Agenda tiene (a lo mucho) una Cita
+  agenda_medica.hasOne(citas, {
+    as: "cita_asignada",
+    foreignKey: "id_agenda",
   });
 
   return {

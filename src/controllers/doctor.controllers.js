@@ -29,3 +29,38 @@ export const openSchedules = asyncHandler(async (req, res) => {
   );
   res.status(201).json(creatingSchedules);
 });
+
+export const getUserDoctorAppointments = asyncHandler(async (req, res) => {
+  const userInSession = req.session.user.id;
+
+  const appointments = await models.citas.findAll({
+    where: {
+      id_medico: userInSession,
+      estado: "pendiente",
+    },
+    attributes: ["id", "estado"],
+    include: [
+      {
+        model: models.agenda_medica,
+        as: "agenda_info",
+        attributes: ["fecha", "hora"],
+        order: [
+          ["fecha", "ASC"],
+          ["hora", "ASC"],
+        ],
+      },
+      {
+        model: models.usuarios,
+        as: "paciente_info",
+        attributes: ["id", "nombre", "apellido", "email"],
+      },
+      {
+        model: models.usuarios,
+        as: "medico_info",
+        attributes: ["id", "nombre", "apellido", "email"],
+      },
+    ],
+  });
+
+  res.status(200).json(appointments);
+});

@@ -59,3 +59,27 @@ export const getAllDoctors = asyncHandler(async (req, res) => {
     doctores: rows,
   });
 });
+
+export const getSchedules = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  if (!id) {
+    res.status(400);
+    throw new Error("Falta especificar el medico");
+  }
+
+  const actualDate = new Date();
+
+  const schedule = await models.agenda_medica.findAll({
+    where: {
+      id_medico: id,
+      disponible: true,
+      fecha: { [Op.gte]: actualDate },
+    },
+    order: [
+      ["fecha", "ASC"],
+      ["hora", "ASC"],
+    ],
+  });
+
+  res.status(200).json(schedule);
+});
