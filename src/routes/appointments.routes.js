@@ -3,6 +3,8 @@ import { roleProtect } from "../middleware/roleProtectMiddleware.js";
 import {
   bookAppointment,
   cancelAppointment,
+  createDiagnosis,
+  getCitaById,
   getUserPatientAppointments,
 } from "../controllers/appointments.controllers.js";
 
@@ -15,5 +17,8 @@ router.get(
   roleProtect([1, 3]),
   getUserPatientAppointments
 );
+router.get("/:id", roleProtect([1, 2]), getCitaById);
+
+router.post("/create-diagnosis", roleProtect([2]), createDiagnosis);
 
 export default router;

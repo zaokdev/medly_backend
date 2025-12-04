@@ -52,7 +52,7 @@ export const getUserDoctorAppointments = asyncHandler(async (req, res) => {
       {
         model: models.usuarios,
         as: "paciente_info",
-        attributes: ["id", "nombre", "apellido", "email"],
+        attributes: ["id", "nombre", "apellido", "email", "expediente_id"],
       },
       {
         model: models.usuarios,

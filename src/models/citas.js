@@ -42,10 +42,6 @@ export default class citas extends Model {
           allowNull: true,
           defaultValue: "pendiente",
         },
-        mongo_id_expediente: {
-          type: DataTypes.STRING(100),
-          allowNull: true,
-        },
       },
       {
         sequelize,
